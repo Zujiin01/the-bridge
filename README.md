@@ -1,22 +1,28 @@
-# The Bridge: let your AI agents talk to each other
+# The Bridge: your AI agents work together without you
 
 **License: [PolyForm Noncommercial 1.0.0](LICENSE). Non-commercial use only.** For commercial use: didierjean@gnetics.ca.
 
-You have two agents. Today, when one needs the other, **you** copy the question, paste it into the other app, wait, copy the answer back. You are the relay.
+> **Trilogy "Work with your AI agent from your phone".** A full workstation driven with your thumbs: no computer, no SSH. This is **part 3 of 3**.
+> 1. **[The Door: Mobile Server Connection](https://github.com/Zujiin01/mobile-server-connection)**: **access**. Your phone agent works on your server.
+> 2. **[OPS Memory](https://github.com/Zujiin01/ops-memory)**: **memory**. Your agents remember what was learned, from one conversation to the next.
+> 3. **The Bridge** (this repository): **autonomy**. Your agents work together without you.
 
-**The Bridge removes the relay.** It is just a folder on your server where agents talk: one inbox per agent, one small text file per message. Two things make it work:
+**The agents contact each other and wake each other up on their own.** Nobody wakes them, nobody copies a message from one app to the other. You only give the confirmations.
+
+This gives the agents on your phone, on your normal subscription, the kind of autonomy you usually only get by paying for API keys and writing your own agent loop.
+
+**Seen in practice:** a new Claude conversation found in OPS Memory how to reach GrokBot, woke it through the Bridge, they split the work, then built and published a web page together. The human only confirmed.
+
+Built first for Claude and GrokBot talking to each other (Claude, Claude on the phone, GrokBot). Anyone can use it, with any agent host that can read a folder or receive a webhook, not only mobile apps. It does not work with the ChatGPT and Gemini mobile apps (see [Compatibility](#compatibility)).
+
+## What it is
+
+The Bridge is just a folder on your server where agents talk: one inbox per agent, one small text file per message. Two things make it work:
 
 1. **A shared way of talking.** A fixed message format, an acknowledgement, a reply that starts with a status (`DONE`, `WIP`, `NEEDS-INPUT`, `BLOCKED`), an expiry, and an archive. Any agent that can run a command on the server can use it.
 2. **Watchers that wake the agent.** The agent does not stay awake and does not check in a loop. The second a message arrives, a watcher wakes it up. Two methods, both used in practice: **Claude** with two watchers run by its Monitor tool, and **GrokBot** (which sleeps between turns) with a small server watcher that calls its webhook.
 
-Works with Claude, Claude on the phone and GrokBot. Does not work with the ChatGPT and Gemini mobile apps (see [Compatibility](#compatibility)).
-
-> **Trilogy "Work with your AI agent from your phone".** This is **part 3 of 3**.
-> 1. **[The Door: Mobile Server Connection](https://github.com/Zujiin01/mobile-server-connection)**: let your agent work on your server from your phone.
-> 2. **[OPS Memory](https://github.com/Zujiin01/ops-memory)**: the pattern system your agents use as memory.
-> 3. **The Bridge** (this repository): let your agents talk to each other, with watchers that wake them up.
->
-> Each part works on its own. With the Door, your phone agents can read and write the bridge folder on the server. With OPS Memory, a new agent finds how to use the bridge in a pattern ([`patterns/bridge-howto.json`](patterns/bridge-howto.json)), and the details of a task go in a pattern instead of a message.
+Each part of the trilogy works on its own. With the Door, your phone agents can read and write the bridge folder on the server. With OPS Memory, a new agent finds how to use the bridge in a pattern ([`patterns/bridge-howto.json`](patterns/bridge-howto.json)), and the details of a task go in a pattern instead of a message.
 
 **Contents:** [Warning](#warning-read-this-first) · [How it works](#how-it-works) · [Try it in 1 minute](#try-it-in-1-minute) · [The folder](#the-folder) · [A message](#a-message) · [The tools](#the-tools) · [Waking the agents](#waking-the-agents) · [Connect your agents](#connect-your-agents) · [Public demo](#a-public-demo) · [Compatibility](#compatibility) · [Going live](#going-live-on-a-server) · [Limits](#known-limits)
 
@@ -47,7 +53,7 @@ sequenceDiagram
     F-->>C: Claude's inbox watcher prints "REPLY RECEIVED ID"
 ```
 
-Nobody copies anything, nobody waits. Between two events, the agents do nothing and spend nothing.
+Nobody copies anything, nobody wakes anyone, nobody waits. Between two events, the agents do nothing and spend nothing. The only human step is a confirmation: an `action` message waits for your yes.
 
 ## Try it in 1 minute
 
@@ -229,7 +235,7 @@ You can show the bridge on a public page: two agents talking live is a good demo
 
 - **Works (used in practice):** Claude (Claude Code and Claude on the phone, with Monitor) and GrokBot (webhook routine, woken by `bridge-wake`).
 - **Does not work: the ChatGPT and Gemini mobile apps.** They cannot run a command on your server (see the Door) and cannot be woken by a background process. Same limit as parts 1 and 2.
-- **Should work, not tested by the author:** any agent that can run a command on the server (to use the tools) and either run a background process or be started by a webhook (to be woken).
+- **Should work, not tested by the author:** any agent host, on a phone, a desktop or a server, that can run a command on the server or read the folder (to use the tools) and either run a background process or be started by a webhook (to be woken).
 
 ## Going live on a server
 

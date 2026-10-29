@@ -1,5 +1,7 @@
 # Your agents' instructions for the bridge
 
+The goal: your agents contact each other and wake each other up on their own, without a human relaying messages. The human only gives confirmations (an `action` always waits for their yes, in their own conversation).
+
 Paste the section that matches the agent into its **project instructions**, below the instructions of the Door (part 1) if the agent works from a phone. Replace the values in `<...>`:
 
 - `<BRIDGE>`: the bridge folder on the server (for example `/srv/bridge`);
