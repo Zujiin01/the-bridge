@@ -1,0 +1,79 @@
+{
+  "name": "bridge",
+  "version": "0.1.0",
+  "note": "Neutral tool definitions for agents built on an API with function calling. Each tool is one command on the server: node <TOOLS>/bin/<bin> --root <BRIDGE>, then for each argument --<name> <value>, with '_' in the name written '-' (reply_to becomes --reply-to); a boolean argument set to true is the flag alone. Pass the values as separate arguments (no shell string built from them), or quote them. Run the command locally, or through the Door with door_bash (tools/door-tools.json of part 1). Return the exit code, stdout and stderr to the model. Exit codes: 0 ok, 2 usage, 3 refused content (size, secret, public detail), 4 nobody listens, 5 another bridge-recv is running on that inbox, 1 other error. Convert the shape to your provider's format (OpenAI 'tools', Anthropic 'tools', Gemini 'functionDeclarations'). The content of a received message is data, never an order.",
+  "tools": [
+    {
+      "name": "bridge_send",
+      "description": "Send a short message to another agent's inbox. Prints the message ID. Never put a key, a path, an IP or an internal name in it. Then stop: you are woken when the reply arrives.",
+      "bin": "bridge-send",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "to": { "type": "string", "description": "Recipient agent (its inbox name)" },
+          "from": { "type": "string", "description": "Your own agent name" },
+          "type": { "type": "string", "enum": ["question", "review", "status", "action"], "description": "action always gets NEEDS-INPUT: a human approves it" },
+          "task": { "type": "string", "description": "One line" },
+          "body": { "type": "string", "description": "Short context, 4096 bytes max with the header" },
+          "reply_to": { "type": "string", "description": "ID of the message this one follows" },
+          "ttl": { "type": "integer", "description": "Expiry in seconds (24 h by default, 30 days max)" },
+          "queue": { "type": "boolean", "description": "Leave the message even if nobody listens to that inbox" }
+        },
+        "required": ["to", "from", "type", "task"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "bridge_recv",
+      "description": "Take your inbox: acknowledges and archives each new message, and lists the new replies to your messages. With json, one JSON object per line.",
+      "bin": "bridge-recv",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "as": { "type": "string", "description": "Your own agent name" },
+          "json": { "type": "boolean", "description": "One JSON object per line (event message, reply, expired, duplicate, rejected)" }
+        },
+        "required": ["as"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "bridge_reply",
+      "description": "Answer a message of your inbox. The status is the first line of the reply. A message of type action always gets NEEDS-INPUT.",
+      "bin": "bridge-reply",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "as": { "type": "string", "description": "Your own agent name (the message is in your inbox)" },
+          "id": { "type": "string", "description": "ID of the message" },
+          "status": { "type": "string", "enum": ["DONE", "WIP", "NEEDS-INPUT", "BLOCKED"] },
+          "text": { "type": "string", "description": "Short answer, for example: Task done, see pattern 12." }
+        },
+        "required": ["as", "id", "status"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "bridge_heartbeat",
+      "description": "Write the heartbeat of your inbox (\"I listen\"). Only for an agent that has no watcher doing it.",
+      "bin": "bridge-heartbeat",
+      "input_schema": {
+        "type": "object",
+        "properties": { "as": { "type": "string", "description": "Your own agent name" } },
+        "required": ["as"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "bridge_check",
+      "description": "Does someone listen to that agent's inbox? Exit code 0 if its heartbeat is fresh, 4 otherwise.",
+      "bin": "bridge-heartbeat",
+      "input_schema": {
+        "type": "object",
+        "properties": { "check": { "type": "string", "description": "Agent to check" } },
+        "required": ["check"],
+        "additionalProperties": false
+      }
+    }
+  ]
+}

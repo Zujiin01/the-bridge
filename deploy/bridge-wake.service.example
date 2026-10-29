@@ -9,7 +9,7 @@ Wants=network-online.target
 [Service]
 # The user that owns the bridge folder (with the Door, the door's user).
 User=<bridge-user>
-ExecStart=/usr/bin/node /opt/bridge/bin/bridge-wake.js --config <path-to>/wake.json
+ExecStart=/usr/bin/node /opt/bridge/bin/bridge-wake.js --config <path-to>/grokbot.wake.json
 Restart=always
 RestartSec=5
 NoNewPrivileges=true

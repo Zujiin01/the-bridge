@@ -263,6 +263,34 @@ function hookServer(status = () => 200) {
   ok((await fetch(V + "/../../etc/passwd")).status === 404, "viewer serves nothing else");
   v.kill("SIGTERM");
 
+  // ---------- tools/bridge-tools.json (agents built on an API) ----------
+  const TD = JSON.parse(fs.readFileSync(path.join(REPO, "tools", "bridge-tools.json"), "utf8"));
+  ok(TD.tools.length === 5 && TD.tools.every((t) => fs.existsSync(path.join(REPO, "bin", t.bin))), "tool definitions point to existing tools");
+  ok(TD.tools.every((t) => { const help = run(R, t.bin, ["--help"]).out; return Object.keys(t.input_schema.properties).every((k) => help.includes("--" + k.replace(/_/g, "-"))); }), "every tool argument is a real option of its tool");
+  const callTool = (Rt, name, args) => {
+    const t = TD.tools.find((x) => x.name === name); const argv = ["--root", Rt];
+    for (const [k, v] of Object.entries(args)) { if (v === true) argv.push("--" + k.replace(/_/g, "-")); else if (v !== false) argv.push("--" + k.replace(/_/g, "-"), String(v)); }
+    return run(Rt, t.bin, argv);
+  };
+  const RT = mkRoot();
+  const tSend = callTool(RT, "bridge_send", { to: "grokbot", from: "claude", type: "question", task: "Tool test", body: "short", ttl: 600 });
+  const tId = tSend.out.trim();
+  const tRecv = callTool(RT, "bridge_recv", { as: "grokbot", json: true });
+  ok(tSend.code === 0 && tRecv.code === 0 && JSON.parse(tRecv.out.split("\n")[0]).id === tId, "bridge_send then bridge_recv through the definitions");
+  ok(callTool(RT, "bridge_reply", { as: "grokbot", id: tId, status: "DONE", text: "ok" }).code === 0 && fs.existsSync(path.join(RT, "to-grokbot", tId + ".reply.md")), "bridge_reply through the definitions");
+  ok(callTool(RT, "bridge_heartbeat", { as: "claude" }).code === 0 && callTool(RT, "bridge_check", { check: "claude" }).code === 0, "bridge_heartbeat and bridge_check through the definitions");
+
+  // ---------- install/install.sh ----------
+  if (process.getuid && process.getuid() !== 0) {
+    const IT = fs.mkdtempSync(path.join(os.tmpdir(), "bridge-install-")); tmps.push(IT);
+    const inst = () => spawnSync("bash", [path.join(REPO, "install", "install.sh"), path.join(IT, "b"), "claude,grokbot", "grokbot"], { env: { ...process.env, BRIDGE_CONFIG_DIR: path.join(IT, "conf") }, encoding: "utf8" });
+    const i1 = inst(); const conf = path.join(IT, "conf", "grokbot.wake.json");
+    ok(i1.status === 0 && fs.existsSync(path.join(IT, "b", "to-claude")) && fs.existsSync(path.join(IT, "b", "to-grokbot")), "install.sh creates the folder and the inboxes");
+    ok(fs.existsSync(conf) && (fs.statSync(conf).mode & 0o777) === 0o600 && JSON.parse(fs.readFileSync(conf, "utf8")).agent === "grokbot", "install.sh writes the wake config, chmod 600");
+    fs.writeFileSync(conf, fs.readFileSync(conf, "utf8").replace("REPLACE_WITH_THE_WEBHOOK_SECRET", "kept"));
+    ok(inst().status === 0 && fs.readFileSync(conf, "utf8").includes("kept"), "install.sh run again keeps an existing config");
+  } else ok(spawnSync("bash", [path.join(REPO, "install", "install.sh"), "/nonexistent", "a"], { encoding: "utf8" }).status === 1, "install.sh refuses root");
+
   // ---------- the local trial ----------
   const tr = spawnSync(process.execPath, [path.join(REPO, "bin", "local-trial.js")], { encoding: "utf8", timeout: 30000 });
   ok(tr.status === 0 && /webhook called, Authorization header correct: true/.test(tr.stdout), "npm run try: the webhook fires");
