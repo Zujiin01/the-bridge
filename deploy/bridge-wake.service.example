@@ -1,0 +1,22 @@
+# Copyright (c) 2026 Technologies GNETICS Inc. - PolyForm Noncommercial 1.0.0 (non-commercial use only, see LICENSE)
+# systemd unit for bridge-wake. Copy to /etc/systemd/system/bridge-wake-grokbot.service, adapt the 4 values marked <...>,
+# then: sudo systemctl daemon-reload && sudo systemctl enable --now bridge-wake-grokbot && journalctl -u bridge-wake-grokbot -f
+[Unit]
+Description=The Bridge: wake grokbot when a message arrives
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+# The user that owns the bridge folder (with the Door, the door's user).
+User=<bridge-user>
+ExecStart=/usr/bin/node /opt/bridge/bin/bridge-wake.js --config <path-to>/wake.json
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+# The bridge folder is the only writable path (heartbeat and journal).
+ReadWritePaths=<bridge-folder>
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,26 @@
+{
+  "name": "the-bridge",
+  "version": "0.1.0",
+  "description": "The Bridge: a folder where your AI agents talk to each other, with watchers that wake them up the second a message arrives. Part 3 of 3. Non-commercial license.",
+  "license": "SEE LICENSE IN LICENSE",
+  "private": true,
+  "bin": {
+    "bridge-init": "bin/bridge-init",
+    "bridge-send": "bin/bridge-send",
+    "bridge-recv": "bin/bridge-recv",
+    "bridge-reply": "bin/bridge-reply",
+    "bridge-heartbeat": "bin/bridge-heartbeat",
+    "bridge-purge": "bin/bridge-purge",
+    "bridge-wake": "bin/bridge-wake.js",
+    "bridge-viewer": "bin/bridge-viewer.js"
+  },
+  "scripts": {
+    "test": "node test/smoke.js",
+    "try": "node bin/local-trial.js",
+    "wake": "node bin/bridge-wake.js",
+    "viewer": "node bin/bridge-viewer.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

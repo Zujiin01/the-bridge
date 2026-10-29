@@ -1,0 +1,13 @@
+#!/usr/bin/env node
+// Copyright (c) 2026 Technologies GNETICS Inc. - PolyForm Noncommercial 1.0.0 (non-commercial use only, see LICENSE)
+"use strict";
+// bridge-purge: deletes files older than N days (default 30, by mtime) in done/, expired/ and rejected/.
+const { cli, bridge } = require("../lib/cli");
+const USAGE = "usage: bridge-purge [--days 30] [--dry-run]";
+cli(USAGE, ["dry-run"], (a) => {
+  const days = a.days === undefined ? bridge.PURGE_DAYS : Number(a.days);
+  if (!Number.isFinite(days) || days < 1) { console.error("invalid --days"); return 2; }
+  const removed = bridge.purge({ days, dryRun: !!a["dry-run"] });
+  for (const p of removed) console.log(`${a["dry-run"] ? "[dry-run] would delete" : "deleted"} ${p}`);
+  console.log(`${removed.length} file(s)`);
+});

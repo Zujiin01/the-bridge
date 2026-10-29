@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+// Copyright (c) 2026 Technologies GNETICS Inc. - PolyForm Noncommercial 1.0.0 (non-commercial use only, see LICENSE)
+"use strict";
+// bridge-reply: writes <id>.reply.md next to the message (first line STATUS), acks it and moves it to done/.
+// A message of TYPE action always gets NEEDS-INPUT, whatever status is asked.
+const { cli, need, readText, bridge } = require("../lib/cli");
+const USAGE = `usage: bridge-reply --as <agent> --id <id> --status DONE|WIP|BLOCKED|NEEDS-INPUT [--text "<text>" | --text-file <file>|-]
+  --as is the agent who answers (the message is in its inbox).`;
+cli(USAGE, [], (a) => {
+  if (!need(a, ["as", "id", "status"], USAGE)) return 2;
+  const r = bridge.writeReply({ as: a.as, id: a.id, status: String(a.status).toUpperCase(), text: readText(a, "text", "text-file") });
+  if (r.forced) console.error(`note: TYPE action, status forced to ${r.status}`);
+  console.log(`reply ${a.id} ${r.status} -> ${r.to}`);
+});

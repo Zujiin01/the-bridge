@@ -1,0 +1,16 @@
+#!/usr/bin/env node
+// Copyright (c) 2026 Technologies GNETICS Inc. - PolyForm Noncommercial 1.0.0 (non-commercial use only, see LICENSE)
+"use strict";
+// bridge-send: the only way to write a message. Makes the ID, checks size, secrets and the recipient's heartbeat,
+// writes .tmp then renames to <id>.msg (atomic). Prints the ID.
+const { cli, need, readText, bridge } = require("../lib/cli");
+const USAGE = `usage: bridge-send --to <agent> --from <agent> --type question|review|status|action --task "<one line>"
+                   [--body "<text>" | --body-file <file>|-] [--reply-to <id>] [--ttl <seconds> | --expires <ISO UTC>] [--queue]
+  BRIDGE_ROOT (or --root) is the bridge folder.
+  Exit codes: 0 sent, 2 usage or header, 3 size, secret or public detail, 4 nobody listens (no fresh heartbeat; --queue sends anyway).`;
+cli(USAGE, ["queue"], (a) => {
+  if (!need(a, ["to", "from", "type", "task"], USAGE)) return 2;
+  const r = bridge.send({ to: a.to, from: a.from, type: a.type, task: a.task, replyTo: a["reply-to"], ttl: a.ttl, expires: a.expires, body: readText(a, "body", "body-file"), queue: !!a.queue });
+  process.stdout.write(r.id + "\n");
+  if (r.header.TYPE === "action") console.error("note: TYPE action, the answer will always be NEEDS-INPUT (a human approves).");
+});

@@ -1,0 +1,18 @@
+#!/usr/bin/env node
+// Copyright (c) 2026 Technologies GNETICS Inc. - PolyForm Noncommercial 1.0.0 (non-commercial use only, see LICENSE)
+"use strict";
+// bridge-heartbeat: writes .heartbeat in an inbox ("I listen"), or --check: is someone listening to that inbox?
+const { cli, need, bridge } = require("../lib/cli");
+const USAGE = `usage: bridge-heartbeat --as <agent>          write the heartbeat of your inbox
+       bridge-heartbeat --check <agent>       exit 0 if fresh, 4 if absent or older than ${bridge.HEARTBEAT_MAX_AGE_S} s`;
+cli(USAGE, [], (a) => {
+  if (a.check) {
+    const hb = bridge.readHeartbeat(bridge.boxDir(a.check));
+    if (!hb.ok) { console.error(hb.message); return 4; }
+    console.log(`heartbeat fresh (${hb.age} s)`); return 0;
+  }
+  if (!need(a, ["as"], USAGE)) return 2;
+  const d = bridge.boxDir(a.as);
+  if (!require("node:fs").existsSync(d)) { console.error("no inbox: run bridge-init"); return 2; }
+  bridge.writeHeartbeat(d); console.log("heartbeat written");
+});

@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+// Copyright (c) 2026 Technologies GNETICS Inc. - PolyForm Noncommercial 1.0.0 (non-commercial use only, see LICENSE)
+"use strict";
+// bridge-init: creates the bridge folder and one inbox per agent (to-<agent>/ with done/, expired/, rejected/).
+const { cli, bridge } = require("../lib/cli");
+const USAGE = `usage: bridge-init --agents claude,grokbot [--public] [--root <folder>]
+  Creates <root>/to-<agent>/ for each agent (mode 700). Safe to run again: it never deletes anything.
+  --public  marks the bridge as shown on a public page: bridge-send then also refuses paths, IPs, ports, e-mails.`;
+cli(USAGE, ["public"], (a) => {
+  if (!a.agents) { console.error(USAGE); return 2; }
+  const made = bridge.init(String(a.agents).split(",").map((s) => s.trim()).filter(Boolean), { public: !!a.public });
+  for (const d of made) console.log("inbox ready: " + d);
+  if (a.public) console.log("public mode: on");
+});

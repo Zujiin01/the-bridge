@@ -1,0 +1,13 @@
+{
+  "agent": "grokbot",
+  "root": "/srv/bridge",
+  "url": "https://example.com/your-agent-webhook-url",
+  "header": "Authorization: Bearer REPLACE_WITH_THE_WEBHOOK_SECRET",
+  "events": ["message", "reply"],
+  "scanMs": 3000,
+  "heartbeatMs": 30000,
+  "retries": 3,
+  "retryDelayMs": 2000,
+  "timeoutMs": 10000,
+  "ringPendingOnStart": true
+}

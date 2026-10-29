@@ -1,0 +1,7 @@
+node_modules/
+wake.json
+*.wake.json
+.env
+*.log
+.tmp-*
+bridge-data/
