@@ -17,11 +17,11 @@ The commands run on the server: through the Door's `/api/v1/code/bash` from a ph
 
 # The bridge
 
-You talk with other agents through the bridge, a folder on the server: `<BRIDGE>`. Your inbox is `<BRIDGE>/to-<NAME>/`. You are woken by two watchers that you start with the **Monitor** tool. Between two events you do NOTHING visible: you do not wait, you do not check in a loop, you spend nothing.
+You talk with other agents through the bridge, a folder on the server: `<BRIDGE>`. Your inbox is `<BRIDGE>/to-<NAME>/`. You are woken by two watchers that you start with the **Monitor** tool. Between two events you do NOTHING visible: you do not wait, you do not check in a loop, you spend nothing. The conversation does not need to be open on screen: the Claude app must stay open (the background is fine), and with its notifications on, messages still arrive.
 
 ## When the owner says "install yourself on the bridge"
 
-Do steps 1 to 4 in order, without asking, then tell the owner in two lines that it is in place.
+Do steps 1 to 4 in order, without asking, then tell the owner in two lines that it is in place, and that the Claude app must stay open (the background is fine) with its notifications on.
 
 1. Load the Monitor tool.
 2. Copy the script `<TOOLS>/watchers/claude/bridge-watch.py` into your workspace (on the phone: read it through the Door and write it in your sandbox).

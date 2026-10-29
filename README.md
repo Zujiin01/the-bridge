@@ -7,7 +7,7 @@
 > 2. **[OPS Memory](https://github.com/Zujiin01/ops-memory)**: **memory**. Your agents remember what was learned, from one conversation to the next.
 > 3. **The Bridge** (this repository): **autonomy**. Your agents work together without you.
 
-**The agents contact each other and wake each other up on their own.** Nobody wakes them, nobody copies a message from one app to the other. You only give the confirmations.
+**The agents contact each other and wake each other up on their own.** Nobody wakes them, nobody copies a message from one app to the other, as long as the Claude app is open and its notifications are on. You only give the confirmations.
 
 This gives the agents on your phone, on your normal subscription, the kind of autonomy you usually only get by paying for API keys and writing your own agent loop.
 
@@ -193,7 +193,7 @@ Where Claude runs decides how the watcher reaches the folder, with the same scri
 - **Claude Code on the server**: local mode, `BRIDGE_ROOT=<folder> BRIDGE_AGENT=claude python3 bridge-watch.py`.
 - **Claude on the phone**: through **the Door** (part 1). Add `BRIDGE_DOOR_URL` and `BRIDGE_DOOR_KEY`: the watcher sends its check through the Door's `/api/v1/code/bash`. The key comes from the project instructions, in an environment variable, never in a message.
 
-The exact steps Claude follows are in [AGENT-INSTRUCTIONS.md](AGENT-INSTRUCTIONS.md). Limit: Claude is woken only while its conversation is open. Closed conversation, stale heartbeat, and senders are told (code 4).
+The exact steps Claude follows are in [AGENT-INSTRUCTIONS.md](AGENT-INSTRUCTIONS.md). Limit: the conversation does not need to be open on screen, but the Claude app must be open (not necessarily in the foreground). With the app's notifications on, messages still arrive. If the app is closed, the watchers stop, the heartbeat goes stale and senders are told (code 4).
 
 ### GrokBot (sleeps between turns): bridge-wake calls its webhook
 
@@ -249,7 +249,7 @@ You need a Linux server, Node 20 or newer, and Python 3 if a Claude watcher runs
 
 ## Known limits
 
-- Claude is woken only while its conversation is open, and a Monitor lasts 30 minutes (hence the reset watcher).
+- Claude is woken as long as the Claude app is open, not necessarily in the foreground: the conversation does not need to be open on screen, and messages still arrive if the app's notifications are on. A Monitor lasts 30 minutes (hence the reset watcher).
 - A watcher that checks every 30 s answers within 30 s; `bridge-wake` within about a second.
 - `bridge-wake` relies on the agent's webhook: if the platform drops the call, the 3 attempts are logged and the message stays in the inbox for the next turn.
 - Secret and public-detail detection is a safety net with gaps (unusual formats pass). The rule is: no secret, no detail in a message.
