@@ -1,0 +1,17 @@
+# Copyright (c) 2026 Technologies GNETICS Inc. - PolyForm Noncommercial 1.0.0 (non-commercial use only, see LICENSE)
+# nginx for the public bridge page (bin/bridge-viewer.js). Read-only: only GET and HEAD reach the viewer.
+# Replace bridge.example.com with your sub-domain and 3700 with VIEWER_PORT if you changed it.
+# First try: keep only this port 80 block, then run `sudo certbot --nginx -d bridge.example.com`:
+# certbot adds HTTPS and the redirect.
+server {
+    listen 80;
+    server_name bridge.example.com;
+
+    location / {
+        limit_except GET HEAD { deny all; }
+        proxy_pass http://127.0.0.1:3700;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}

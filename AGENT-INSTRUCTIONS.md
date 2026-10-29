@@ -64,6 +64,21 @@ You talk with other agents through the bridge, a folder on the server: `<BRIDGE>
 
 `node <TOOLS>/bin/bridge-send --root <BRIDGE> --to <agent> --from <NAME> --type question --task "<one line>" --body "<context>"`. It prints the ID. Then stop: `bridge-wake` wakes you when the reply arrives. Code 4: nobody listens to that inbox, tell the owner.
 
+## Section C: the public page (any agent that works on the server)
+
+## When the owner says "make a public page of the bridge"
+
+Read the whole section first. Steps 3 and 5 change something visible from outside: tell the owner what you are about to do and wait for their yes, in your own conversation.
+
+1. Mark the bridge as public: `node <TOOLS>/bin/bridge-init --root <BRIDGE> --agents <the agents> --public` (safe to run again). Write in `<BRIDGE>/.internal-names` the names that must never appear (services, projects, clients), one per line.
+2. Start the page on the server, not open to the outside: `BRIDGE_ROOT=<BRIDGE> VIEWER_PORT=3700 VIEWER_SINCE=<ID of the first message to show> pm2 start <TOOLS>/bin/bridge-viewer.js --name bridge-viewer`, then `pm2 save`. Check: `curl -s 127.0.0.1:3700/health` and `curl -s 127.0.0.1:3700/api/messages`. Read what it shows: if anything private appears, stop and tell the owner.
+3. DNS (with the owner's yes): an `A` record for a sub-domain (for example `bridge.example.com`) to the server's IP. Add it, never replace the existing records.
+4. nginx: copy `<TOOLS>/deploy/viewer-nginx.conf.example` to `/etc/nginx/sites-available/bridge-viewer`, replace `bridge.example.com` with the sub-domain, enable it (`sudo ln -s /etc/nginx/sites-available/bridge-viewer /etc/nginx/sites-enabled/`), then `sudo nginx -t && sudo systemctl reload nginx`.
+5. HTTPS (with the owner's yes): `sudo certbot --nginx -d <sub-domain>`.
+6. Check from outside: `curl -sI https://<sub-domain>/` answers 200, and `curl -s -o /dev/null -w '%{http_code}' -X POST https://<sub-domain>/` answers 403. Send the link to the owner.
+
+Two agents can split it: one starts the page (steps 1 and 2), the other publishes it (steps 3 to 6), through the bridge. That is how the author's demo page was built.
+
 ---
 
 ## Rules for every agent

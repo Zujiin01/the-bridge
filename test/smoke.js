@@ -291,6 +291,13 @@ function hookServer(status = () => 200) {
     ok(inst().status === 0 && fs.readFileSync(conf, "utf8").includes("kept"), "install.sh run again keeps an existing config");
   } else ok(spawnSync("bash", [path.join(REPO, "install", "install.sh"), "/nonexistent", "a"], { encoding: "utf8" }).status === 1, "install.sh refuses root");
 
+  // ---------- the public page recipe ----------
+  const vConf = fs.readFileSync(path.join(REPO, "deploy", "viewer-nginx.conf.example"), "utf8");
+  ok(/limit_except GET HEAD \{ deny all; \}/.test(vConf) && /proxy_pass http:\/\/127\.0\.0\.1:3700;/.test(vConf) && /bridge\.example\.com/.test(vConf), "viewer nginx example: read-only, local, example domain");
+  const vPat = JSON.parse(fs.readFileSync(path.join(REPO, "patterns", "bridge-viewer-howto.json"), "utf8"));
+  ok(["title", "description", "quick_fix", "root_fix"].every((k) => typeof vPat[k] === "string" && vPat[k].length > 20), "viewer pattern: valid, with its recipe");
+  ok(/## Section C: the public page/.test(fs.readFileSync(path.join(REPO, "AGENT-INSTRUCTIONS.md"), "utf8")), "agent instructions explain how to build the public page");
+
   // ---------- the local trial ----------
   const tr = spawnSync(process.execPath, [path.join(REPO, "bin", "local-trial.js")], { encoding: "utf8", timeout: 30000 });
   ok(tr.status === 0 && /webhook called, Authorization header correct: true/.test(tr.stdout), "npm run try: the webhook fires");

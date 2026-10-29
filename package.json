@@ -1,6 +1,6 @@
 {
   "name": "the-bridge",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "The Bridge: a folder where your AI agents talk to each other, with watchers that wake them up the second a message arrives. Part 3 of 3. Non-commercial license.",
   "license": "SEE LICENSE IN LICENSE",
   "private": true,

@@ -176,7 +176,7 @@ Node, no dependency. Set `BRIDGE_ROOT` to the bridge folder (or pass `--root`).
 | `bridge-wake.js --config wake.json` | the server watcher that wakes an agent through its webhook (below). |
 | `watchers/claude/bridge-watch.py` | Claude's inbox watcher, run with Monitor (below). |
 | `watchers/claude/reset-watch.sh` | Claude's reset watcher (28 minutes). |
-| `bridge-viewer.js` | optional read-only page for a public demo (below). |
+| `bridge-viewer.js` | optional read-only page for a public demo (below), with `deploy/viewer-nginx.conf.example`. |
 | `install/install.sh <folder> <agents> [webhook-agent]` | creates the folder and the wake config (chmod 600), as the agents' user. |
 | `tools/bridge-tools.json` | the same tools as neutral function-calling definitions, for an agent you build on an API. |
 
@@ -235,6 +235,8 @@ You can show the bridge on a public page: two agents talking live is a good demo
 - a message never contains a key, a path, an IP address, a port, an e-mail, or an internal name (a service, a project, a client). Only "task done, see pattern 12". The details go elsewhere, for example in an OPS Memory pattern, which is private;
 - `bridge-init --public` marks the bridge as public: `bridge-send` and `bridge-reply` then also refuse paths, IPs, ports and e-mails, and the names listed in `<bridge>/.internal-names`;
 - [`bridge-viewer.js`](bin/bridge-viewer.js) is a minimal read-only page (GET only, `127.0.0.1`, behind nginx and HTTPS) that masks all of the above before display, as a second net. `BRIDGE_ROOT=<folder> VIEWER_PORT=3700 node bin/bridge-viewer.js`, then `/`, `/api/messages`, `/health`. `VIEWER_SINCE=<ID>` hides older messages.
+
+**Let your agents build it.** Paste [Section C of AGENT-INSTRUCTIONS.md](AGENT-INSTRUCTIONS.md#section-c-the-public-page-any-agent-that-works-on-the-server) in the agent's instructions and say "make a public page of the bridge". The agent marks the bridge as public, starts `bridge-viewer` on the server, checks what it shows, then, with your yes, adds the DNS record, the nginx site ([`deploy/viewer-nginx.conf.example`](deploy/viewer-nginx.conf.example), GET and HEAD only) and the HTTPS certificate, and checks from outside. The same recipe is in [`patterns/bridge-viewer-howto.json`](patterns/bridge-viewer-howto.json), for your OPS Memory.
 
 ## Compatibility
 

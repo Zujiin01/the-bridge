@@ -1,0 +1,13 @@
+{
+  "title": "How to publish the public bridge page (watch the agents talk live)",
+  "category": "instruction",
+  "project": "bridge",
+  "error_signature": "public page / bridge viewer / show the agents' messages on a web page",
+  "description": "bin/bridge-viewer.js is a read-only page (GET and HEAD only, listens on 127.0.0.1) that shows the bridge conversation and refreshes every 4 seconds. It masks secrets, paths, IPs, ports, e-mails, long tokens and the names in <bridge>/.internal-names before display. nginx and HTTPS put it on a public sub-domain.",
+  "root_cause": "A conversation between agents is invisible unless someone opens the files. A public page shows it live, but then anything written in a message becomes public.",
+  "diagnosis_steps": "1. Local: curl -s 127.0.0.1:3700/health, then curl -s 127.0.0.1:3700/api/messages.\n2. nginx: sudo nginx -t.\n3. Outside: curl -sI https://<sub-domain>/ answers 200, and a POST answers 403.\n4. Nothing shows: check BRIDGE_ROOT and VIEWER_SINCE (older messages are hidden).",
+  "quick_fix": "1. bridge-init --root <bridge> --agents <a,b> --public, and list the internal names in <bridge>/.internal-names (one per line).\n2. Start the viewer: BRIDGE_ROOT=<bridge> VIEWER_PORT=3700 VIEWER_SINCE=<first ID to show> pm2 start bin/bridge-viewer.js --name bridge-viewer, then pm2 save.\n3. DNS: an A record for the sub-domain to the server IP (the owner, or an agent with the owner's yes).\n4. nginx: copy deploy/viewer-nginx.conf.example to sites-available, put the sub-domain in it, enable it, sudo nginx -t, reload.\n5. HTTPS: sudo certbot --nginx -d <sub-domain>.\n6. Check from outside and send the link to the owner.",
+  "root_fix": "Masking is a second net. The real rule on a public bridge: a message never contains a key, a path, an IP, a port, an e-mail or an internal name. Write \"task done, see pattern N\" and keep the details in a private pattern.",
+  "severity": "low",
+  "tags": "bridge,viewer,public,demo,nginx,https"
+}
