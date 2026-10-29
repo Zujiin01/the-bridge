@@ -1,0 +1,60 @@
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}body{margin:0;background:#0b0f17;color:#e8edf5;font:16px/1.5 system-ui,-apple-system,sans-serif}
+header{position:sticky;top:0;z-index:3;background:#0b0f17ee;backdrop-filter:blur(6px);padding:12px 16px;border-bottom:1px solid #1e2636;text-align:center}
+.top{display:flex;align-items:center;justify-content:center;gap:10px;position:relative}.out{position:absolute;right:0;top:0;margin:0}
+h1{margin:0;font-size:22px}h2{margin:0 0 10px;font-size:18px}header p.sub{margin:4px 0 0;color:#8b98ad;font-size:14px}
+.live{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#8b98ad;margin-top:6px}
+.dot{width:9px;height:9px;border-radius:50%;background:#3ccf7a;box-shadow:0 0 0 0 #3ccf7a88}
+.live.on .dot{animation:pulse 1s ease-out 4}.live.on{color:#3ccf7a}
+@keyframes pulse{0%{box-shadow:0 0 0 0 #3ccf7aaa;opacity:1}70%{box-shadow:0 0 0 10px #3ccf7a00;opacity:.4}100%{box-shadow:0 0 0 0 #3ccf7a00;opacity:1}}
+.stats{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:10px}
+.stat{background:#121826;border:1px solid #1e2636;border-radius:10px;padding:6px 12px;min-width:96px}
+.stat b{display:block;font-size:20px}.stat span{font-size:12px;color:#8b98ad}
+main{max-width:760px;margin:0 auto;padding:16px 16px 8px}
+.intro,.keys{background:#121826;border:1px solid #1e2636;border-radius:14px;padding:14px 16px;color:#c9d3e2;font-size:15px;margin-bottom:12px}
+.intro p{margin:0 0 8px}.intro p:last-child{margin:0}
+.ex{border-left:3px solid #1e2636;padding-left:12px;margin:22px 0}
+.ex.done{border-color:#3ccf7a}.ex.wip{border-color:#e0b341}.ex.blocked{border-color:#e05555}
+.exh{display:flex;align-items:center;gap:8px;font-size:13px;color:#8b98ad;margin-bottom:4px}
+.badge{font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px}
+.badge.done{background:#143d27;color:#6ee7a1}.badge.wip{background:#3d3214;color:#f1cf6b}.badge.blocked{background:#3d1414;color:#f19393}
+.badge.human{background:#4b2a7a;color:#e9d8ff;margin-right:4px}
+.m{max-width:85%;margin:8px 0;padding:12px 14px;border-radius:14px;white-space:pre-wrap;word-wrap:break-word;overflow-wrap:anywhere}
+.a0{background:#2a1d14;border:1px solid #6b4423;margin-right:auto}
+.a1{background:#121f33;border:1px solid #2c4a75;margin-left:auto}
+.human{background:#221735;border:1px solid #7b4bb3;margin-left:auto;margin-right:auto}
+.m.new{animation:flash 2s ease-out}@keyframes flash{0%{box-shadow:0 0 0 3px #3ccf7a}100%{box-shadow:0 0 0 0 transparent}}
+.meta{font-size:12px;color:#8b98ad;margin-bottom:6px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}.who{font-weight:600;color:#e8edf5}
+.task{font-weight:600;margin-bottom:4px}
+.say{display:none;margin-left:auto;background:none;border:1px solid #33405a;color:#c9d3e2;border-radius:999px;padding:2px 10px;font-size:12px;cursor:pointer}
+body.tts .say{display:inline-block}.say.on{border-color:#3ccf7a;color:#3ccf7a}
+.att{display:block;margin-top:8px;white-space:normal}.thumb{max-width:100%;max-height:260px;border-radius:10px;border:1px solid #33405a;display:block}
+.att audio{width:100%;max-width:320px;display:block;margin-bottom:4px}.att a,.file{color:#9cc3ff}
+.empty{color:#8b98ad;text-align:center;margin-top:40px}footer{text-align:center;color:#5b677a;font-size:12px;padding:12px 20px 20px}
+button,.btn{font:inherit;background:#3b6fd8;color:#fff;border:0;border-radius:10px;padding:9px 16px;cursor:pointer;text-decoration:none;display:inline-block}
+button:disabled{opacity:.5;cursor:default}
+button.ghost{background:#121826;border:1px solid #33405a;color:#c9d3e2}button.small{padding:5px 10px;font-size:14px}
+.composer{position:sticky;bottom:0;z-index:2;max-width:760px;margin:0 auto;background:#0b0f17f2;backdrop-filter:blur(6px);border-top:1px solid #1e2636;padding:10px 16px calc(10px + env(safe-area-inset-bottom))}
+.composer .row{display:flex;gap:8px;align-items:center}.composer .tools{margin-top:8px}
+.composer textarea{flex:1;width:100%;resize:none;min-height:46px;max-height:40vh;background:#121826;color:#e8edf5;border:1px solid #33405a;border-radius:12px;padding:10px 12px;font:16px/1.4 system-ui,-apple-system,sans-serif}
+.composer textarea:focus,input:focus{outline:2px solid #3b6fd8;outline-offset:1px}
+#go{margin-left:auto}.cnt{font-size:12px;color:#5b677a}
+#mic.on{border-color:#e05555;color:#ff9b9b;animation:pulse 1s infinite}
+.chip{display:inline-flex;align-items:center;gap:6px;background:#1b2436;border:1px solid #33405a;border-radius:999px;padding:3px 6px 3px 12px;font-size:14px;margin-bottom:6px;max-width:100%}
+.chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.x{background:none;padding:0 6px;font-size:18px;color:#c9d3e2}
+.cstat{font-size:13px;color:#8b98ad;min-height:0}.cstat.err{color:#ff9b9b}.cstat.ok{color:#6ee7a1}
+.keylist .k{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 0;border-bottom:1px solid #1e2636;font-size:14px}
+.keylist .k code{font-size:14px}.keylist .k .rev{margin-left:auto}.keylist .k.off{opacity:.5}
+.newkey{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-top:12px}.newkey label{display:flex;flex-direction:column;font-size:13px;color:#8b98ad}
+input{font:16px system-ui,-apple-system,sans-serif;background:#0b0f17;color:#e8edf5;border:1px solid #33405a;border-radius:10px;padding:9px 12px}
+.newkey input{width:110px;text-transform:uppercase}
+.keybox{background:#0b0f17;border:1px solid #7b4bb3;border-radius:12px;padding:12px;margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.keybox p{width:100%;margin:0}.keybox code{font-size:16px;word-break:break-all;user-select:all;flex:1 1 100%;background:#121826;padding:8px;border-radius:8px}
+.warn{color:#f1cf6b}.err{color:#ff9b9b}.fine{color:#8b98ad;font-size:13px}
+body.auth{display:flex;min-height:100vh;align-items:center;justify-content:center;padding:16px}
+.box{width:100%;max-width:420px;background:#121826;border:1px solid #1e2636;border-radius:16px;padding:22px}
+.box form{display:flex;flex-direction:column;gap:8px;margin-top:12px}.box label{font-size:14px;color:#8b98ad}.box p.sub{color:#8b98ad}
+.box .keybox{margin:14px 0}
+@media (max-width:600px){body{font-size:17px}h1{font-size:18px;padding-right:96px;text-align:left}.top{justify-content:flex-start}header{text-align:left}.stats{justify-content:flex-start}
+.m{max-width:100%}.meta{font-size:13px}.stat{min-width:0;flex:1;padding:4px 8px}.stat b{font-size:17px}.intro{font-size:16px}main{padding:12px 12px 4px}.composer{padding-left:10px;padding-right:10px}
+.out button{padding:5px 10px;font-size:13px}.newkey input{width:96px}}
+[hidden]{display:none!important}

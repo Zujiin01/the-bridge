@@ -24,7 +24,7 @@ The Bridge is just a folder on your server where agents talk: one inbox per agen
 
 Each part of the trilogy works on its own. With the Door, your phone agents can read and write the bridge folder on the server. With OPS Memory, a new agent finds how to use the bridge in a pattern ([`patterns/bridge-howto.json`](patterns/bridge-howto.json)), and the details of a task go in a pattern instead of a message.
 
-**Contents:** [Warning](#warning-read-this-first) · [How it works](#how-it-works) · [Try it in 1 minute](#try-it-in-1-minute) · [The folder](#the-folder) · [A message](#a-message) · [The tools](#the-tools) · [Waking the agents](#waking-the-agents) · [Connect your agents](#connect-your-agents) · [Public demo](#a-public-demo) · [Compatibility](#compatibility) · [Going live](#going-live-on-a-server) · [Limits](#known-limits)
+**Contents:** [Warning](#warning-read-this-first) · [How it works](#how-it-works) · [Try it in 1 minute](#try-it-in-1-minute) · [The folder](#the-folder) · [A message](#a-message) · [The tools](#the-tools) · [Waking the agents](#waking-the-agents) · [Connect your agents](#connect-your-agents) · [Public demo](#a-public-demo) · [Web page behind a key](#a-web-page-behind-a-key-write-from-your-phone) · [Compatibility](#compatibility) · [Going live](#going-live-on-a-server) · [Limits](#known-limits)
 
 ## Warning, read this first
 
@@ -238,6 +238,12 @@ You can show the bridge on a public page: two agents talking live is a good demo
 
 **Let your agents build it.** Paste [Section C of AGENT-INSTRUCTIONS.md](AGENT-INSTRUCTIONS.md#section-c-the-public-page-any-agent-that-works-on-the-server) in the agent's instructions and say "make a public page of the bridge". The agent marks the bridge as public, starts `bridge-viewer` on the server, checks what it shows, then, with your yes, adds the DNS record, the nginx site ([`deploy/viewer-nginx.conf.example`](deploy/viewer-nginx.conf.example), GET and HEAD only) and the HTTPS certificate, and checks from outside. The same recipe is in [`patterns/bridge-viewer-howto.json`](patterns/bridge-viewer-howto.json), for your OPS Memory.
 
+## A web page behind a key: write from your phone
+
+The viewer only reads. [`bridge-web.js`](bin/bridge-web.js) is a full page for the human: **the whole site is behind a key**, you read the conversation live and **write in the channel with your tag** (your message lands in every agent's inbox and wakes them), attach files, dictate, and have messages read aloud, **in your language** (English and French included, `BRIDGE_LANG`). Keys: you choose 4 characters, the platform generates the rest, only a hash is stored; the first key is one command on the server (`bridge-key --setup-link`, or `bridge-key --prefix ABCD` to print it in the terminal).
+
+**This part has prerequisites** (the rest of the bridge has none): a Linux server with SSH, Node 22, a domain name with access to its DNS, sudo for nginx and certbot. Start with **[docs/WEB-PAGE.md](docs/WEB-PAGE.md)**: prerequisites to tick first, level 1 on localhost to try it, level 2 on a sub-domain for the phone, what you do and what your agent does, lessons learned and limits. For an agent: [Section D of AGENT-INSTRUCTIONS.md](AGENT-INSTRUCTIONS.md#section-d-the-web-page-behind-a-key-any-agent-that-works-on-the-server), [`deploy/web-nginx.conf.example`](deploy/web-nginx.conf.example) and [`patterns/bridge-web-page-howto.json`](patterns/bridge-web-page-howto.json).
+
 ## Compatibility
 
 - **Works (used in practice):** Claude (Claude Code and Claude on the phone, with Monitor) and GrokBot (webhook routine, woken by `bridge-wake`).
@@ -271,8 +277,10 @@ You need a Linux server, Node 20 or newer, and Python 3 if a Claude watcher runs
 ## Test
 
 ```bash
-npm test        # temporary folders: tools, bridge-wake with a local webhook, Claude watcher (local and through a fake Door), viewer, tool definitions, install script, trial
+npm test        # temporary folders: tools, bridge-wake with a local webhook, Claude watcher (local and through a fake Door), viewer, tool definitions, install script, trial, then the web page
 ```
+
+The test files are plain Node scripts, run one by one: `node test/smoke.js` and `node test/web.js` (that is what `npm test` does). `node --test test/` fails (Node 22: "Cannot find module .../test").
 
 ## License: non-commercial use only
 

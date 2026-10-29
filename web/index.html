@@ -1,0 +1,35 @@
+<!doctype html><html lang="{{_lang}}"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="referrer" content="same-origin">
+<title>{{title}}</title><link rel="stylesheet" href="/app.css"></head><body>
+<header><div class="top"><h1>{{title}}</h1>
+<form method="post" action="/logout" class="out"><button type="submit" class="ghost">{{logout}}</button></form></div>
+<p class="sub">{{sub}}</p>
+<div class="live" id="live"><span class="dot"></span><span id="livet">{{live}}</span></div>
+<div class="stats"><div class="stat"><b id="sN">0</b><span>{{statMsgs}}</span></div><div class="stat"><b id="sD">0</b><span>{{statDone}}</span></div><div class="stat"><b id="sL">-</b><span>{{statLast}}</span></div></div>
+</header>
+<main><section class="intro"><p>{{intro1}}</p>
+<p>{{intro2}}</p>
+<p><button type="button" id="keysBtn" class="ghost small">{{manageKeys}}</button></p></section>
+<section id="keys" class="keys" hidden>
+<h2>{{keysH}}</h2>
+<div id="keyList" class="keylist"></div>
+<form id="newKey" class="newkey"><label>{{prefix4}}<input id="nkP" maxlength="4" pattern="[A-Za-z0-9]{4}" required autocapitalize="characters" placeholder="ABCD"></label>
+<label>{{tag}}<input id="nkL" maxlength="12" pattern="[A-Za-z0-9]{1,12}" placeholder="{{label}}"></label>
+<button type="submit">{{newKeyBtn}}</button></form>
+<div id="nkOut" class="keybox" hidden><p class="warn">{{keyOnce}}</p><code id="nkKey"></code><button type="button" id="nkCopy" class="copy">{{copy}}</button><button type="button" id="nkDone" class="ghost small">{{keyCopiedDone}}</button></div>
+<p id="keyMsg" class="fine"></p>
+</section>
+<div id="l"><p class="empty">{{loading}}</p></div></main>
+<form id="composer" class="composer" autocomplete="off">
+<div id="chip" class="chip" hidden><span id="chipName"></span><button type="button" id="chipX" class="x" aria-label="{{removeFile}}">&times;</button></div>
+<div id="cstat" class="cstat" aria-live="polite"></div>
+<div class="row"><textarea id="t" maxlength="4000" rows="1" placeholder="{{placeholder}}" aria-label="{{message}}"></textarea></div>
+<div class="row tools"><input type="file" id="file" accept=".png,.jpg,.jpeg,.gif,.webp,.pdf,.txt,.md,.csv,.log,.mp3,.m4a,.ogg,.opus,.wav,.webm" hidden>
+<button type="button" id="att" class="ghost" aria-label="{{attachAria}}">&#128206; {{attach}}</button>
+<button type="button" id="mic" class="ghost" aria-label="{{dictate}}" hidden>&#127908; {{dictate}}</button>
+<span id="cnt" class="cnt">0/4000</span>
+<button type="submit" id="go">{{send}}</button></div>
+</form>
+<footer>{{footer}}</footer>
+<script type="application/json" id="i18n">{{@json}}</script>
+<script src="/app.js"></script></body></html>

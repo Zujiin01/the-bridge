@@ -1,0 +1,23 @@
+# Copyright (c) 2026 Technologies GNETICS Inc. - PolyForm Noncommercial 1.0.0 (non-commercial use only, see LICENSE)
+# nginx for the bridge web page behind a key (bin/bridge-web.js). Read docs/WEB-PAGE.md first.
+# Replace bridge.example.com with your sub-domain and 3360 with BRIDGE_WEB_PORT if you changed it.
+# First try: keep only this port 80 block, then run `sudo certbot --nginx -d bridge.example.com`:
+# certbot adds HTTPS (listen 443, ssl_* lines) and the redirect from port 80. Keep the lines it adds as they are.
+server {
+    listen 80;
+    server_name bridge.example.com;
+
+    client_max_body_size 12m;          # files are 10 MB max in the service, plus room for the request
+    client_body_timeout 60s;
+
+    location / {
+        limit_except GET HEAD POST { deny all; }   # POST: sign-in, messages, files, keys
+        proxy_pass http://127.0.0.1:3360;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;                # required: the service compares Origin with the host (anti-CSRF)
+        proxy_set_header X-Real-IP $remote_addr;    # required: 5 sign-in attempts per minute per address
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_request_buffering off;                # files stream to the service
+        proxy_read_timeout 60s;
+    }
+}

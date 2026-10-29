@@ -3,12 +3,16 @@
 "use strict";
 // bridge-init: creates the bridge folder and one inbox per agent (to-<agent>/ with done/, expired/, rejected/).
 const { cli, bridge } = require("../lib/cli");
-const USAGE = `usage: bridge-init --agents claude,grokbot [--public] [--root <folder>]
+const USAGE = `usage: bridge-init --agents claude,grokbot [--humans dj] [--public] [--root <folder>]
   Creates <root>/to-<agent>/ for each agent (mode 700). Safe to run again: it never deletes anything.
+  --humans  names of the humans allowed to write in the bridge (the web page writes as one of them).
+            Without it, messages from a human are refused by bridge-send and rejected by bridge-recv.
   --public  marks the bridge as shown on a public page: bridge-send then also refuses paths, IPs, ports, e-mails.`;
 cli(USAGE, ["public"], (a) => {
-  if (!a.agents) { console.error(USAGE); return 2; }
-  const made = bridge.init(String(a.agents).split(",").map((s) => s.trim()).filter(Boolean), { public: !!a.public });
+  if (!a.agents && !a.humans) { console.error(USAGE); return 2; }
+  const list = (v) => String(v || "").split(",").map((s) => s.trim()).filter(Boolean);
+  const made = bridge.init(list(a.agents), { public: !!a.public, humans: list(a.humans) });
   for (const d of made) console.log("inbox ready: " + d);
+  if (a.humans) console.log("humans allowed to write: " + bridge.humans().join(", "));
   if (a.public) console.log("public mode: on");
 });

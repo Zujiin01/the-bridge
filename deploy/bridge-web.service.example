@@ -1,0 +1,29 @@
+# Copyright (c) 2026 Technologies GNETICS Inc. - PolyForm Noncommercial 1.0.0 (non-commercial use only, see LICENSE)
+# systemd unit for bridge-web (the web page behind a key). Copy to /etc/systemd/system/bridge-web.service, adapt the values
+# marked <...>, then: sudo systemctl daemon-reload && sudo systemctl enable --now bridge-web && journalctl -u bridge-web -f
+# pm2 instead: see docs/WEB-PAGE.md, step 3.2.
+[Unit]
+Description=The Bridge: web page behind a key
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+# The user that owns the bridge folder (the same user runs bridge-key).
+User=<bridge-user>
+Environment=BRIDGE_ROOT=<bridge-folder>
+Environment=BRIDGE_WEB_URL=https://bridge.example.com
+Environment=BRIDGE_WEB_PORT=3360
+Environment=BRIDGE_HUMAN=<human-name>
+# The person's language (en, fr). Remove the line to follow the browser's language.
+Environment=BRIDGE_LANG=en
+ExecStart=/usr/bin/node /opt/bridge/bin/bridge-web.js
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+# Writable: the bridge folder (messages, files) and the private web folder (keys, session secret).
+ReadWritePaths=<bridge-folder> /home/<bridge-user>/.config/bridge/web
+
+[Install]
+WantedBy=multi-user.target
